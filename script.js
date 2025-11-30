@@ -702,15 +702,16 @@ function initParallax() {
 }
 
 // ============================================
-// SKILLS WHEEL ANIMATION
+// SKILLS WHEEL ANIMATION WITH DRAGGABLE PLANETS
 // ============================================
 function initSkillsWheel() {
     const wheel = document.querySelector('.skills-wheel');
     if (!wheel) return;
     
-    // Pause animation on hover
     const orbits = wheel.querySelectorAll('.skill-orbit');
+    const planets = wheel.querySelectorAll('.skill-planet');
     
+    // Pause animation on hover
     wheel.addEventListener('mouseenter', () => {
         orbits.forEach(orbit => {
             orbit.style.animationPlayState = 'paused';
@@ -718,9 +719,134 @@ function initSkillsWheel() {
     });
     
     wheel.addEventListener('mouseleave', () => {
+        if (!wheel.classList.contains('dragging-active')) {
+            orbits.forEach(orbit => {
+                orbit.style.animationPlayState = 'running';
+            });
+        }
+    });
+    
+    // Tooltip positioning - always on top
+    planets.forEach(planet => {
+        const tooltip = planet.querySelector('.skill-tooltip');
+        if (!tooltip) return;
+        
+        planet.addEventListener('mouseenter', () => {
+            updateTooltipPosition(planet, tooltip);
+        });
+        
+        planet.addEventListener('mousemove', () => {
+            updateTooltipPosition(planet, tooltip);
+        });
+    });
+    
+    // Draggable planets
+    initDraggablePlanets(wheel, planets, orbits);
+}
+
+function updateTooltipPosition(planet, tooltip) {
+    const rect = planet.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    
+    // Position tooltip above the planet
+    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+    let top = rect.top - tooltipRect.height - 15;
+    
+    // Keep tooltip within viewport
+    if (left < 10) left = 10;
+    if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+    }
+    if (top < 10) {
+        // Show below if not enough space above
+        top = rect.bottom + 15;
+        tooltip.classList.add('below');
+    } else {
+        tooltip.classList.remove('below');
+    }
+    
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+}
+
+function initDraggablePlanets(wheel, planets, orbits) {
+    let isDragging = false;
+    let currentPlanet = null;
+    let startX, startY;
+    let originalParent, originalNextSibling;
+    
+    planets.forEach(planet => {
+        planet.style.cursor = 'grab';
+        
+        planet.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            currentPlanet = planet;
+            
+            // Store original position info
+            originalParent = planet.parentElement;
+            originalNextSibling = planet.nextElementSibling;
+            
+            // Get current position
+            const rect = planet.getBoundingClientRect();
+            startX = rect.left + rect.width / 2;
+            startY = rect.top + rect.height / 2;
+            
+            // Add dragging classes
+            planet.classList.add('dragging');
+            wheel.classList.add('dragging-active');
+            
+            // Pause orbits
+            orbits.forEach(orbit => {
+                orbit.style.animationPlayState = 'paused';
+            });
+            
+            // Move planet to body for free movement
+            document.body.appendChild(planet);
+            planet.classList.add('dragged');
+            planet.style.left = (e.clientX - planet.offsetWidth / 2) + 'px';
+            planet.style.top = (e.clientY - planet.offsetHeight / 2) + 'px';
+        });
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !currentPlanet) return;
+        
+        currentPlanet.style.left = (e.clientX - currentPlanet.offsetWidth / 2) + 'px';
+        currentPlanet.style.top = (e.clientY - currentPlanet.offsetHeight / 2) + 'px';
+        
+        // Update tooltip position while dragging
+        const tooltip = currentPlanet.querySelector('.skill-tooltip');
+        if (tooltip) {
+            updateTooltipPosition(currentPlanet, tooltip);
+        }
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (!isDragging || !currentPlanet) return;
+        
+        // Return planet to original position
+        currentPlanet.classList.remove('dragging', 'dragged');
+        currentPlanet.style.left = '';
+        currentPlanet.style.top = '';
+        currentPlanet.style.position = '';
+        
+        // Return to original parent
+        if (originalNextSibling) {
+            originalParent.insertBefore(currentPlanet, originalNextSibling);
+        } else {
+            originalParent.appendChild(currentPlanet);
+        }
+        
+        wheel.classList.remove('dragging-active');
+        
+        // Resume orbits
         orbits.forEach(orbit => {
             orbit.style.animationPlayState = 'running';
         });
+        
+        isDragging = false;
+        currentPlanet = null;
     });
 }
 
