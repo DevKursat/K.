@@ -215,54 +215,6 @@ button {
 }
 
 /* ============================================
-   LANGUAGE SWITCHER
-   ============================================ */
-.lang-switcher {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1001;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    background: rgba(10, 10, 10, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.nav.scrolled ~ .lang-switcher,
-.lang-switcher.scrolled {
-    background: rgba(10, 10, 10, 0.95);
-}
-
-.lang-btn {
-    color: var(--text-muted);
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    transition: all var(--duration-fast) ease;
-}
-
-.lang-btn:hover {
-    color: var(--text-secondary);
-}
-
-.lang-btn.active {
-    color: var(--accent-primary);
-    background: rgba(0, 217, 255, 0.1);
-}
-
-.lang-divider {
-    color: var(--text-muted);
-    font-size: 0.75rem;
-}
-
-/* ============================================
    NAVIGATION
    ============================================ */
 .nav {
@@ -301,6 +253,46 @@ button {
 .nav-links {
     display: flex;
     gap: 40px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.lang-btn {
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-fast) ease;
+}
+
+.lang-btn:hover {
+    color: var(--text-secondary);
+}
+
+.lang-btn.active {
+    color: var(--accent-primary);
+    background: rgba(0, 217, 255, 0.1);
+}
+
+.lang-divider {
+    color: var(--text-muted);
+    font-size: 0.75rem;
 }
 
 .nav-link {
@@ -1123,7 +1115,125 @@ button {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 700;
     line-height: 1.2;
-    margin-bottom: 80px;
+    margin-bottom: 40px;
+}
+
+/* Skills Toggle */
+.skills-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 50px;
+}
+
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+}
+
+.toggle-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.toggle-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.toggle-icon {
+    font-size: 1.2rem;
+}
+
+/* Skills Playground */
+.skills-playground {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+.skills-playground.hidden {
+    display: none;
+}
+
+.playground-hint {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid var(--accent-primary);
+    border-radius: var(--radius-xl);
+    color: var(--accent-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 10;
+    animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.playground-ball {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 70px;
+    height: 70px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: 50%;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
+    z-index: 5;
+}
+
+.playground-ball:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+}
+
+.playground-ball.grabbing {
+    cursor: grabbing;
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+    z-index: 100;
+}
+
+.playground-ball .ball-icon {
+    font-size: 1.5rem;
+    margin-bottom: 2px;
+}
+
+.playground-ball .ball-name {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
 }
 
 /* Skills Wheel - Solar System */
@@ -1132,6 +1242,10 @@ button {
     width: min(600px, 85vw);
     height: min(600px, 85vw);
     margin: 0 auto;
+}
+
+.skills-wheel.hidden {
+    display: none;
 }
 
 .wheel-center {
@@ -1348,6 +1462,10 @@ button {
 /* Mobile Skills */
 .skills-mobile {
     display: none;
+}
+
+.skills-mobile.hidden {
+    display: none !important;
 }
 
 /* ============================================
@@ -1759,13 +1877,41 @@ button {
         display: flex;
     }
     
-    /* Lang Switcher */
+    /* Lang Switcher - Mobile'da da nav içinde */
     .lang-switcher {
-        top: 15px;
-        right: 15px;
         padding: 5px 10px;
         font-size: 0.75rem;
         gap: 4px;
+    }
+    
+    /* Skills Toggle Mobile */
+    .skills-toggle {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .toggle-btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+    
+    /* Skills Playground Mobile */
+    .skills-playground {
+        height: 400px;
+    }
+    
+    .playground-ball {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .playground-ball .ball-icon {
+        font-size: 1.2rem;
+    }
+    
+    .playground-ball .ball-name {
+        font-size: 0.5rem;
     }
     
     /* Hero */

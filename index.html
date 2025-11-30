@@ -40,17 +40,6 @@
         </div>
     </div>
 
-    <!-- Language Switcher -->
-    <div class="lang-switcher">
-        <button class="lang-btn active" data-lang="tr" aria-label="Türkçe">
-            TR
-        </button>
-        <span class="lang-divider">/</span>
-        <button class="lang-btn" data-lang="en" aria-label="English">
-            EN
-        </button>
-    </div>
-
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-logo">
@@ -62,9 +51,16 @@
             <a href="#skills" class="nav-link" data-tr="Beceriler" data-en="Skills">Beceriler</a>
             <a href="#contact" class="nav-link" data-tr="İletişim" data-en="Contact">İletişim</a>
         </div>
-        <div class="nav-menu-btn" aria-label="Menu">
-            <span></span>
-            <span></span>
+        <div class="nav-right">
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="tr" aria-label="Türkçe">TR</button>
+                <span class="lang-divider">/</span>
+                <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+            </div>
+            <div class="nav-menu-btn" aria-label="Menu">
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
 
@@ -485,6 +481,23 @@
                 <span data-tr="Her proje için" data-en="The right tool for">Her proje için</span>
                 <span class="text-gradient" data-tr="doğru araç." data-en="every project.">doğru araç.</span>
             </h2>
+            
+            <!-- Skills View Toggle -->
+            <div class="skills-toggle" data-scroll="fade-up">
+                <button class="toggle-btn active" data-view="solar">
+                    <span class="toggle-icon">☀️</span>
+                    <span data-tr="Güneş Sistemi" data-en="Solar System">Güneş Sistemi</span>
+                </button>
+                <button class="toggle-btn" data-view="playground">
+                    <span class="toggle-icon">🎮</span>
+                    <span data-tr="Oyun Alanı" data-en="Playground">Oyun Alanı</span>
+                </button>
+            </div>
+            
+            <!-- Skills Playground (Gravity Mode) -->
+            <div class="skills-playground hidden">
+                <div class="playground-hint" data-tr="Teknolojileri tut ve fırlat! 🚀" data-en="Grab and throw the technologies! 🚀">Teknolojileri tut ve fırlat! 🚀</div>
+            </div>
             
             <div class="skills-wheel" data-scroll="fade-up">
                 <div class="wheel-center">

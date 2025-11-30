@@ -726,17 +726,25 @@ function initSkillsWheel() {
         }
     });
     
-    // Tooltip positioning - always on top
+    // Tooltip positioning - always on top with mouse tracking
     planets.forEach(planet => {
         const tooltip = planet.querySelector('.skill-tooltip');
         if (!tooltip) return;
         
-        planet.addEventListener('mouseenter', () => {
-            updateTooltipPosition(planet, tooltip);
+        // Show tooltip and position it
+        planet.addEventListener('mouseenter', (e) => {
+            tooltip.style.opacity = '1';
+            tooltip.style.visibility = 'visible';
+            updateTooltipPosition(e, tooltip);
         });
         
-        planet.addEventListener('mousemove', () => {
-            updateTooltipPosition(planet, tooltip);
+        planet.addEventListener('mousemove', (e) => {
+            updateTooltipPosition(e, tooltip);
+        });
+        
+        planet.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = '0';
+            tooltip.style.visibility = 'hidden';
         });
     });
     
@@ -744,22 +752,21 @@ function initSkillsWheel() {
     initDraggablePlanets(wheel, planets, orbits);
 }
 
-function updateTooltipPosition(planet, tooltip) {
-    const rect = planet.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
+function updateTooltipPosition(e, tooltip) {
+    // Position tooltip above mouse cursor
+    const tooltipWidth = tooltip.offsetWidth || 150;
+    const tooltipHeight = tooltip.offsetHeight || 60;
     
-    // Position tooltip above the planet
-    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
-    let top = rect.top - tooltipRect.height - 15;
+    let left = e.clientX - tooltipWidth / 2;
+    let top = e.clientY - tooltipHeight - 20;
     
     // Keep tooltip within viewport
     if (left < 10) left = 10;
-    if (left + tooltipRect.width > window.innerWidth - 10) {
-        left = window.innerWidth - tooltipRect.width - 10;
+    if (left + tooltipWidth > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipWidth - 10;
     }
     if (top < 10) {
-        // Show below if not enough space above
-        top = rect.bottom + 15;
+        top = e.clientY + 20;
         tooltip.classList.add('below');
     } else {
         tooltip.classList.remove('below');
@@ -772,7 +779,6 @@ function updateTooltipPosition(planet, tooltip) {
 function initDraggablePlanets(wheel, planets, orbits) {
     let isDragging = false;
     let currentPlanet = null;
-    let startX, startY;
     let originalParent, originalNextSibling;
     
     planets.forEach(planet => {
@@ -786,11 +792,6 @@ function initDraggablePlanets(wheel, planets, orbits) {
             // Store original position info
             originalParent = planet.parentElement;
             originalNextSibling = planet.nextElementSibling;
-            
-            // Get current position
-            const rect = planet.getBoundingClientRect();
-            startX = rect.left + rect.width / 2;
-            startY = rect.top + rect.height / 2;
             
             // Add dragging classes
             planet.classList.add('dragging');
@@ -814,12 +815,6 @@ function initDraggablePlanets(wheel, planets, orbits) {
         
         currentPlanet.style.left = (e.clientX - currentPlanet.offsetWidth / 2) + 'px';
         currentPlanet.style.top = (e.clientY - currentPlanet.offsetHeight / 2) + 'px';
-        
-        // Update tooltip position while dragging
-        const tooltip = currentPlanet.querySelector('.skill-tooltip');
-        if (tooltip) {
-            updateTooltipPosition(currentPlanet, tooltip);
-        }
     });
     
     document.addEventListener('mouseup', () => {
@@ -848,6 +843,255 @@ function initDraggablePlanets(wheel, planets, orbits) {
         isDragging = false;
         currentPlanet = null;
     });
+}
+
+// ============================================
+// SKILLS VIEW TOGGLE & PLAYGROUND
+// ============================================
+const skillsData = [
+    { icon: 'TS', name: 'TypeScript', color: '#3178C6' },
+    { icon: 'JS', name: 'JavaScript', color: '#F7DF1E' },
+    { icon: 'PY', name: 'Python', color: '#3776AB' },
+    { icon: 'JV', name: 'Java', color: '#ED8B00' },
+    { icon: 'KT', name: 'Kotlin', color: '#7F52FF' },
+    { icon: 'DT', name: 'Dart', color: '#0175C2' },
+    { icon: '⚛️', name: 'React', color: '#61DAFB' },
+    { icon: '🔺', name: 'Next.js', color: '#fff' },
+    { icon: '💙', name: 'Flutter', color: '#02569B' },
+    { icon: '🚀', name: 'FastAPI', color: '#009688' },
+    { icon: '📗', name: 'Node.js', color: '#339933' },
+    { icon: '🔥', name: 'Firebase', color: '#FFCA28' },
+    { icon: '⚡', name: 'Supabase', color: '#3ECF8E' },
+    { icon: '🤖', name: 'AI/ML', color: '#00D9FF' },
+    { icon: '🐳', name: 'Docker', color: '#2496ED' },
+    { icon: '🐘', name: 'PostgreSQL', color: '#336791' },
+    { icon: '🍃', name: 'MongoDB', color: '#47A248' },
+    { icon: '🔄', name: 'Git', color: '#F05032' },
+    { icon: '☸️', name: 'Kubernetes', color: '#326CE5' },
+    { icon: '☁️', name: 'AWS', color: '#FF9900' },
+    { icon: '🎨', name: 'Figma', color: '#F24E1E' },
+    { icon: '📱', name: 'React Native', color: '#61DAFB' },
+    { icon: '🔗', name: 'REST/GraphQL', color: '#E10098' }
+];
+
+let playgroundBalls = [];
+let animationId = null;
+
+function initSkillsToggle() {
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+    const wheel = document.querySelector('.skills-wheel');
+    const playground = document.querySelector('.skills-playground');
+    const skillsMobile = document.querySelector('.skills-mobile');
+    
+    if (!toggleBtns.length || !wheel || !playground) return;
+    
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            
+            // Update active button
+            toggleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (view === 'solar') {
+                // Show solar system
+                playground.classList.add('hidden');
+                wheel.classList.remove('hidden');
+                if (skillsMobile) skillsMobile.classList.add('hidden');
+                stopPlaygroundPhysics();
+            } else if (view === 'playground') {
+                // Show playground with gravity drop
+                wheel.classList.add('hidden');
+                if (skillsMobile) skillsMobile.classList.add('hidden');
+                playground.classList.remove('hidden');
+                initPlayground(playground);
+            }
+        });
+    });
+}
+
+function initPlayground(container) {
+    // Clear previous balls
+    container.querySelectorAll('.playground-ball').forEach(b => b.remove());
+    playgroundBalls = [];
+    
+    const containerRect = container.getBoundingClientRect();
+    const ballSize = window.innerWidth < 768 ? 60 : 70;
+    
+    // Create balls with random positions at top
+    skillsData.forEach((skill, index) => {
+        const ball = document.createElement('div');
+        ball.className = 'playground-ball';
+        ball.innerHTML = `
+            <span class="ball-icon">${skill.icon}</span>
+            <span class="ball-name">${skill.name}</span>
+        `;
+        ball.style.borderColor = skill.color;
+        
+        // Random position at top
+        const x = Math.random() * (containerRect.width - ballSize);
+        const y = -100 - (index * 30); // Start above container, staggered
+        
+        ball.style.left = x + 'px';
+        ball.style.top = y + 'px';
+        
+        container.appendChild(ball);
+        
+        playgroundBalls.push({
+            el: ball,
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 2,
+            vy: 0,
+            size: ballSize
+        });
+        
+        // Add drag handlers
+        addBallDragHandlers(ball, playgroundBalls[playgroundBalls.length - 1], container);
+    });
+    
+    // Start physics
+    startPlaygroundPhysics(container);
+}
+
+function addBallDragHandlers(ball, ballData, container) {
+    let isDragging = false;
+    let lastX = 0, lastY = 0;
+    let lastTime = 0;
+    
+    const onStart = (e) => {
+        isDragging = true;
+        ball.classList.add('grabbing');
+        
+        const pos = getEventPos(e);
+        lastX = pos.x;
+        lastY = pos.y;
+        lastTime = Date.now();
+        
+        ballData.vx = 0;
+        ballData.vy = 0;
+        
+        e.preventDefault();
+    };
+    
+    const onMove = (e) => {
+        if (!isDragging) return;
+        
+        const pos = getEventPos(e);
+        const containerRect = container.getBoundingClientRect();
+        
+        const newX = pos.x - containerRect.left - ballData.size / 2;
+        const newY = pos.y - containerRect.top - ballData.size / 2;
+        
+        // Calculate velocity for throwing
+        const now = Date.now();
+        const dt = (now - lastTime) / 1000;
+        if (dt > 0) {
+            ballData.vx = (pos.x - lastX) / dt * 0.05;
+            ballData.vy = (pos.y - lastY) / dt * 0.05;
+        }
+        
+        ballData.x = Math.max(0, Math.min(containerRect.width - ballData.size, newX));
+        ballData.y = Math.max(0, Math.min(containerRect.height - ballData.size, newY));
+        
+        ball.style.left = ballData.x + 'px';
+        ball.style.top = ballData.y + 'px';
+        
+        lastX = pos.x;
+        lastY = pos.y;
+        lastTime = now;
+        
+        e.preventDefault();
+    };
+    
+    const onEnd = () => {
+        isDragging = false;
+        ball.classList.remove('grabbing');
+    };
+    
+    // Mouse events
+    ball.addEventListener('mousedown', onStart);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+    
+    // Touch events
+    ball.addEventListener('touchstart', onStart, { passive: false });
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+}
+
+function getEventPos(e) {
+    if (e.touches && e.touches.length) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+}
+
+function startPlaygroundPhysics(container) {
+    const gravity = 0.5;
+    const bounce = 0.7;
+    const friction = 0.99;
+    
+    function update() {
+        const containerRect = container.getBoundingClientRect();
+        
+        playgroundBalls.forEach(ball => {
+            if (ball.el.classList.contains('grabbing')) return;
+            
+            // Apply gravity
+            ball.vy += gravity;
+            
+            // Apply friction
+            ball.vx *= friction;
+            ball.vy *= friction;
+            
+            // Update position
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+            
+            // Bounce off walls
+            if (ball.x < 0) {
+                ball.x = 0;
+                ball.vx *= -bounce;
+            }
+            if (ball.x > containerRect.width - ball.size) {
+                ball.x = containerRect.width - ball.size;
+                ball.vx *= -bounce;
+            }
+            
+            // Bounce off floor
+            if (ball.y > containerRect.height - ball.size) {
+                ball.y = containerRect.height - ball.size;
+                ball.vy *= -bounce;
+                
+                // Stop bouncing if velocity is very low
+                if (Math.abs(ball.vy) < 1) {
+                    ball.vy = 0;
+                }
+            }
+            
+            // Bounce off ceiling
+            if (ball.y < 0) {
+                ball.y = 0;
+                ball.vy *= -bounce;
+            }
+            
+            // Update DOM
+            ball.el.style.left = ball.x + 'px';
+            ball.el.style.top = ball.y + 'px';
+        });
+        
+        animationId = requestAnimationFrame(update);
+    }
+    
+    update();
+}
+
+function stopPlaygroundPhysics() {
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
 }
 
 // ============================================
@@ -902,22 +1146,6 @@ function initMarquee() {
 }
 
 // ============================================
-// LANG SWITCHER SCROLL EFFECT
-// ============================================
-function initLangSwitcherScroll() {
-    const langSwitcher = document.querySelector('.lang-switcher');
-    if (!langSwitcher) return;
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            langSwitcher.classList.add('scrolled');
-        } else {
-            langSwitcher.classList.remove('scrolled');
-        }
-    });
-}
-
-// ============================================
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -929,9 +1157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initProjectModal();
     initParallax();
     initSkillsWheel();
+    initSkillsToggle();
     initMarquee();
     initTiltEffect();
-    initLangSwitcherScroll();
 });
 
 // Handle page visibility
