@@ -473,82 +473,223 @@
     <!-- Skills Section -->
     <section id="skills" class="skills">
         <div class="container">
-            <div class="section-label" data-scroll="fade-right">
-                <span class="label-line"></span>
-                <span data-tr="03 — Teknolojiler" data-en="03 — Technologies">03 — Teknolojiler</span>
-            </div>
-            <h2 class="skills-title" data-scroll="fade-up">
-                <span data-tr="Her proje için" data-en="The right tool for">Her proje için</span>
-                <span class="text-gradient" data-tr="doğru araç." data-en="every project.">doğru araç.</span>
-            </h2>
-            
-            <!-- Skills View Toggle -->
-            <div class="skills-toggle" data-scroll="fade-up">
-                <button class="toggle-btn active" data-view="solar">
-                    <span class="toggle-icon">☀️</span>
-                    <span data-tr="Güneş Sistemi" data-en="Solar System">Güneş Sistemi</span>
-                </button>
-                <button class="toggle-btn" data-view="playground">
-                    <span class="toggle-icon">🎮</span>
-                    <span data-tr="Oyun Alanı" data-en="Playground">Oyun Alanı</span>
-                </button>
-            </div>
-            
-            <!-- Skills Playground (Gravity Mode) -->
-            <div class="skills-playground hidden">
-                <div class="playground-hint" data-tr="Teknolojileri tut ve fırlat! 🚀" data-en="Grab and throw the technologies! 🚀">Teknolojileri tut ve fırlat! 🚀</div>
-            </div>
-            
-            <div class="skills-wheel" data-scroll="fade-up">
-                <div class="wheel-center">
-                    <span class="wheel-text">☀️</span>
+            <div class="skills-header">
+                <div class="skills-header-left">
+                    <div class="section-label" data-scroll="fade-right">
+                        <span class="label-line"></span>
+                        <span data-tr="03 — Teknolojiler" data-en="03 — Technologies">03 — Teknolojiler</span>
+                    </div>
+                    <h2 class="skills-title" data-scroll="fade-up">
+                        <span data-tr="Her proje için" data-en="The right tool for">Her proje için</span>
+                        <span class="text-gradient" data-tr="doğru araç." data-en="every project.">doğru araç.</span>
+                    </h2>
                 </div>
-                <!-- Inner Orbit - Core Languages -->
-                <div class="skill-orbit orbit-1">
-                    <div class="skill-planet" style="--angle: 0deg">
-                        TS
-                        <div class="skill-tooltip">
-                            <span class="tooltip-title">TypeScript</span>
-                            <span class="tooltip-desc" data-tr="Tip güvenli JavaScript" data-en="Type-safe JavaScript">Tip güvenli JavaScript</span>
+                <div class="skills-mode-switcher" data-scroll="fade-left">
+                    <button class="mode-btn active" data-mode="grid" aria-label="Tablo Görünümü">
+                        <span class="mode-icon">📊</span>
+                        <span class="mode-tooltip" data-tr="Tablo" data-en="Grid">Tablo</span>
+                    </button>
+                    <button class="mode-btn" data-mode="solar" aria-label="Güneş Sistemi">
+                        <span class="mode-icon">☀️</span>
+                        <span class="mode-tooltip" data-tr="Güneş Sistemi" data-en="Solar System">Güneş Sistemi</span>
+                    </button>
+                    <button class="mode-btn" data-mode="zero-g" aria-label="Sıfır Yerçekimi">
+                        <span class="mode-icon">🪐</span>
+                        <span class="mode-tooltip" data-tr="Sıfır G" data-en="Zero G">Sıfır G</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Skills Container - Holds all views -->
+            <div class="skills-container">
+                <!-- Grid View (Default) -->
+                <div class="skills-grid-view active" data-view="grid">
+                    <div class="skill-category-group" data-scroll="fade-up">
+                        <h3 class="category-title">
+                            <span class="category-icon">🌐</span>
+                            Frontend
+                        </h3>
+                        <div class="skill-items">
+                            <div class="skill-item" style="--skill-color: #3178C6">
+                                <span class="skill-icon">TS</span>
+                                <span class="skill-name">TypeScript</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #F7DF1E">
+                                <span class="skill-icon">JS</span>
+                                <span class="skill-name">JavaScript</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #61DAFB">
+                                <span class="skill-icon">⚛️</span>
+                                <span class="skill-name">React</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #000">
+                                <span class="skill-icon">🔺</span>
+                                <span class="skill-name">Next.js</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #E34F26">
+                                <span class="skill-icon">🎨</span>
+                                <span class="skill-name">HTML/CSS</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="skill-planet" style="--angle: 60deg">
-                        JS
-                        <div class="skill-tooltip">
-                            <span class="tooltip-title">JavaScript</span>
-                            <span class="tooltip-desc" data-tr="Web'in dili" data-en="Language of the web">Web'in dili</span>
+                    <div class="skill-category-group" data-scroll="fade-up" data-scroll-delay="100">
+                        <h3 class="category-title">
+                            <span class="category-icon">⚙️</span>
+                            Backend
+                        </h3>
+                        <div class="skill-items">
+                            <div class="skill-item" style="--skill-color: #3776AB">
+                                <span class="skill-icon">PY</span>
+                                <span class="skill-name">Python</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #009688">
+                                <span class="skill-icon">🚀</span>
+                                <span class="skill-name">FastAPI</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #339933">
+                                <span class="skill-icon">📗</span>
+                                <span class="skill-name">Node.js</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #ED8B00">
+                                <span class="skill-icon">JV</span>
+                                <span class="skill-name">Java</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #7F52FF">
+                                <span class="skill-icon">KT</span>
+                                <span class="skill-name">Kotlin</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="skill-planet" style="--angle: 120deg">
-                        PY
-                        <div class="skill-tooltip">
-                            <span class="tooltip-title">Python</span>
-                            <span class="tooltip-desc" data-tr="AI & Backend geliştirme" data-en="AI & Backend development">AI & Backend geliştirme</span>
+                    <div class="skill-category-group" data-scroll="fade-up" data-scroll-delay="200">
+                        <h3 class="category-title">
+                            <span class="category-icon">📱</span>
+                            Mobile
+                        </h3>
+                        <div class="skill-items">
+                            <div class="skill-item" style="--skill-color: #02569B">
+                                <span class="skill-icon">💙</span>
+                                <span class="skill-name">Flutter</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #0175C2">
+                                <span class="skill-icon">DT</span>
+                                <span class="skill-name">Dart</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #61DAFB">
+                                <span class="skill-icon">📱</span>
+                                <span class="skill-name">React Native</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="skill-planet" style="--angle: 180deg">
-                        JV
-                        <div class="skill-tooltip">
-                            <span class="tooltip-title">Java</span>
-                            <span class="tooltip-desc" data-tr="Enterprise uygulamalar" data-en="Enterprise applications">Enterprise uygulamalar</span>
+                    <div class="skill-category-group" data-scroll="fade-up" data-scroll-delay="300">
+                        <h3 class="category-title">
+                            <span class="category-icon">🗄️</span>
+                            Database & DevOps
+                        </h3>
+                        <div class="skill-items">
+                            <div class="skill-item" style="--skill-color: #336791">
+                                <span class="skill-icon">🐘</span>
+                                <span class="skill-name">PostgreSQL</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #47A248">
+                                <span class="skill-icon">🍃</span>
+                                <span class="skill-name">MongoDB</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #3ECF8E">
+                                <span class="skill-icon">⚡</span>
+                                <span class="skill-name">Supabase</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #FFCA28">
+                                <span class="skill-icon">🔥</span>
+                                <span class="skill-name">Firebase</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #2496ED">
+                                <span class="skill-icon">🐳</span>
+                                <span class="skill-name">Docker</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #F05032">
+                                <span class="skill-icon">🔄</span>
+                                <span class="skill-name">Git</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="skill-planet" style="--angle: 240deg">
-                        KT
-                        <div class="skill-tooltip">
-                            <span class="tooltip-title">Kotlin</span>
-                            <span class="tooltip-desc" data-tr="Modern Android geliştirme" data-en="Modern Android development">Modern Android geliştirme</span>
-                        </div>
-                    </div>
-                    <div class="skill-planet" style="--angle: 300deg">
-                        DT
-                        <div class="skill-tooltip">
-                            <span class="tooltip-title">Dart</span>
-                            <span class="tooltip-desc" data-tr="Flutter için optimize" data-en="Optimized for Flutter">Flutter için optimize</span>
+                    <div class="skill-category-group" data-scroll="fade-up" data-scroll-delay="400">
+                        <h3 class="category-title">
+                            <span class="category-icon">🤖</span>
+                            AI & Cloud
+                        </h3>
+                        <div class="skill-items">
+                            <div class="skill-item" style="--skill-color: #00D9FF">
+                                <span class="skill-icon">🤖</span>
+                                <span class="skill-name">AI/ML</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #FF9900">
+                                <span class="skill-icon">☁️</span>
+                                <span class="skill-name">AWS</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #326CE5">
+                                <span class="skill-icon">☸️</span>
+                                <span class="skill-name">Kubernetes</span>
+                            </div>
+                            <div class="skill-item" style="--skill-color: #F24E1E">
+                                <span class="skill-icon">🎨</span>
+                                <span class="skill-name">Figma</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- Middle Orbit - Frameworks -->
+                
+                <!-- Solar System View -->
+                <div class="skills-solar-view" data-view="solar">
+                    <div class="skills-wheel">
+                        <div class="wheel-center">
+                            <span class="wheel-text">☀️</span>
+                        </div>
+                        <!-- Inner Orbit - Core Languages -->
+                        <div class="skill-orbit orbit-1">
+                            <div class="skill-planet" style="--angle: 0deg">
+                                TS
+                                <div class="skill-tooltip">
+                                    <span class="tooltip-title">TypeScript</span>
+                                    <span class="tooltip-desc" data-tr="Tip güvenli JavaScript" data-en="Type-safe JavaScript">Tip güvenli JavaScript</span>
+                                </div>
+                            </div>
+                            <div class="skill-planet" style="--angle: 60deg">
+                                JS
+                                <div class="skill-tooltip">
+                                    <span class="tooltip-title">JavaScript</span>
+                                    <span class="tooltip-desc" data-tr="Web'in dili" data-en="Language of the web">Web'in dili</span>
+                                </div>
+                            </div>
+                            <div class="skill-planet" style="--angle: 120deg">
+                                PY
+                                <div class="skill-tooltip">
+                                    <span class="tooltip-title">Python</span>
+                                    <span class="tooltip-desc" data-tr="AI & Backend geliştirme" data-en="AI & Backend development">AI & Backend geliştirme</span>
+                                </div>
+                            </div>
+                            <div class="skill-planet" style="--angle: 180deg">
+                                JV
+                                <div class="skill-tooltip">
+                                    <span class="tooltip-title">Java</span>
+                                    <span class="tooltip-desc" data-tr="Enterprise uygulamalar" data-en="Enterprise applications">Enterprise uygulamalar</span>
+                                </div>
+                            </div>
+                            <div class="skill-planet" style="--angle: 240deg">
+                                KT
+                                <div class="skill-tooltip">
+                                    <span class="tooltip-title">Kotlin</span>
+                                    <span class="tooltip-desc" data-tr="Modern Android geliştirme" data-en="Modern Android development">Modern Android geliştirme</span>
+                                </div>
+                            </div>
+                            <div class="skill-planet" style="--angle: 300deg">
+                                DT
+                                <div class="skill-tooltip">
+                                    <span class="tooltip-title">Dart</span>
+                                    <span class="tooltip-desc" data-tr="Flutter için optimize" data-en="Optimized for Flutter">Flutter için optimize</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Middle Orbit - Frameworks -->
                 <div class="skill-orbit orbit-2">
                     <div class="skill-planet" style="--angle: 0deg">
                         ⚛️
@@ -672,47 +813,15 @@
                             <span class="tooltip-desc" data-tr="API mimarileri" data-en="API architectures">API mimarileri</span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Mobile Skills List -->
-            <div class="skills-mobile">
-                <div class="skill-category" data-scroll="fade-up">
-                    <h3>Frontend</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">TypeScript</span>
-                        <span class="skill-tag">JavaScript</span>
-                        <span class="skill-tag">Next.js</span>
-                        <span class="skill-tag">React</span>
-                        <span class="skill-tag">HTML/CSS</span>
+                        </div>
                     </div>
                 </div>
-                <div class="skill-category" data-scroll="fade-up" data-scroll-delay="100">
-                    <h3>Backend</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">FastAPI</span>
-                        <span class="skill-tag">Node.js</span>
-                        <span class="skill-tag">Java</span>
-                        <span class="skill-tag">Kotlin</span>
-                    </div>
-                </div>
-                <div class="skill-category" data-scroll="fade-up" data-scroll-delay="200">
-                    <h3>Mobile</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Flutter</span>
-                        <span class="skill-tag">FlutterFlow</span>
-                        <span class="skill-tag">React Native</span>
-                    </div>
-                </div>
-                <div class="skill-category" data-scroll="fade-up" data-scroll-delay="300">
-                    <h3>Database & DevOps</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">PostgreSQL</span>
-                        <span class="skill-tag">MySQL</span>
-                        <span class="skill-tag">Supabase</span>
-                        <span class="skill-tag">Docker</span>
-                        <span class="skill-tag">Git</span>
+                
+                <!-- Zero Gravity View -->
+                <div class="skills-zero-g-view" data-view="zero-g">
+                    <div class="zero-g-hint">
+                        <span class="hint-icon">🪐</span>
+                        <span data-tr="Telefonu salla veya mouse'u hareket ettir!" data-en="Shake your phone or move your mouse!">Telefonu salla veya mouse'u hareket ettir!</span>
                     </div>
                 </div>
             </div>

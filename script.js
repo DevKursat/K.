@@ -468,17 +468,32 @@ function initCursor() {
 }
 
 // ============================================
-// LOADER
+// LOADER WITH PORTAL ZOOM EFFECT
 // ============================================
 function initLoader() {
     const loader = document.querySelector('.loader');
+    const loaderContent = document.querySelector('.loader-content');
+    
+    // Add portal rings for zoom effect
+    for (let i = 0; i < 3; i++) {
+        const ring = document.createElement('div');
+        ring.className = 'loader-ring';
+        loader.appendChild(ring);
+    }
     
     window.addEventListener('load', () => {
+        // Wait for dots animation to complete a cycle
         setTimeout(() => {
-            loader.classList.add('hidden');
-            document.body.style.overflow = '';
-            initScrollAnimations();
-        }, 1000);
+            // Trigger zoom-in portal effect
+            loader.classList.add('zoom-in');
+            
+            // After zoom animation, hide loader and show content
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                document.body.style.overflow = '';
+                initScrollAnimations();
+            }, 1200);
+        }, 1200);
     });
     
     // Prevent scrolling while loading
@@ -846,7 +861,7 @@ function initDraggablePlanets(wheel, planets, orbits) {
 }
 
 // ============================================
-// SKILLS VIEW TOGGLE & PLAYGROUND
+// SKILLS VIEW MODE SWITCHER & ZERO-G PLAYGROUND
 // ============================================
 const skillsData = [
     { icon: 'TS', name: 'TypeScript', color: '#3178C6' },
@@ -874,87 +889,103 @@ const skillsData = [
     { icon: '🔗', name: 'REST/GraphQL', color: '#E10098' }
 ];
 
-let playgroundBalls = [];
+let zeroGBalls = [];
 let animationId = null;
+let deviceMotionEnabled = false;
+let motionAccel = { x: 0, y: 0 };
 
 function initSkillsToggle() {
-    const toggleBtns = document.querySelectorAll('.toggle-btn');
-    const wheel = document.querySelector('.skills-wheel');
-    const playground = document.querySelector('.skills-playground');
-    const skillsMobile = document.querySelector('.skills-mobile');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const gridView = document.querySelector('.skills-grid-view');
+    const solarView = document.querySelector('.skills-solar-view');
+    const zeroGView = document.querySelector('.skills-zero-g-view');
     
-    if (!toggleBtns.length || !wheel || !playground) return;
+    if (!modeBtns.length) return;
     
-    toggleBtns.forEach(btn => {
+    modeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            const view = btn.dataset.view;
+            const mode = btn.dataset.mode;
             
-            // Update active button
-            toggleBtns.forEach(b => b.classList.remove('active'));
+            // Update active button with animation
+            modeBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            if (view === 'solar') {
-                // Show solar system
-                playground.classList.add('hidden');
-                wheel.classList.remove('hidden');
-                if (skillsMobile) skillsMobile.classList.add('hidden');
-                stopPlaygroundPhysics();
-            } else if (view === 'playground') {
-                // Show playground with gravity drop
-                wheel.classList.add('hidden');
-                if (skillsMobile) skillsMobile.classList.add('hidden');
-                playground.classList.remove('hidden');
-                initPlayground(playground);
-            }
+            // Hide all views with fade out
+            [gridView, solarView, zeroGView].forEach(view => {
+                if (view) {
+                    view.classList.remove('active');
+                }
+            });
+            
+            // Stop any physics
+            stopZeroGPhysics();
+            
+            // Show selected view with animation delay
+            setTimeout(() => {
+                if (mode === 'grid' && gridView) {
+                    gridView.classList.add('active');
+                } else if (mode === 'solar' && solarView) {
+                    solarView.classList.add('active');
+                } else if (mode === 'zero-g' && zeroGView) {
+                    zeroGView.classList.add('active');
+                    initZeroGPlayground(zeroGView);
+                }
+            }, 100);
         });
     });
 }
 
-function initPlayground(container) {
+function initZeroGPlayground(container) {
     // Clear previous balls
-    container.querySelectorAll('.playground-ball').forEach(b => b.remove());
-    playgroundBalls = [];
+    container.querySelectorAll('.zero-g-ball').forEach(b => b.remove());
+    zeroGBalls = [];
     
     const containerRect = container.getBoundingClientRect();
     const ballSize = window.innerWidth < 768 ? 60 : 70;
     
-    // Create balls with random positions at top
+    // Create balls with random positions
     skillsData.forEach((skill, index) => {
         const ball = document.createElement('div');
-        ball.className = 'playground-ball';
+        ball.className = 'zero-g-ball floating';
         ball.innerHTML = `
             <span class="ball-icon">${skill.icon}</span>
             <span class="ball-name">${skill.name}</span>
         `;
         ball.style.borderColor = skill.color;
         
-        // Random position at top
+        // Random position across the container
         const x = Math.random() * (containerRect.width - ballSize);
-        const y = -100 - (index * 30); // Start above container, staggered
+        const y = Math.random() * (containerRect.height - ballSize);
         
         ball.style.left = x + 'px';
         ball.style.top = y + 'px';
         
+        // Random animation delay for floating effect
+        ball.style.animationDelay = `${Math.random() * 2}s`;
+        
         container.appendChild(ball);
         
-        playgroundBalls.push({
+        zeroGBalls.push({
             el: ball,
             x: x,
             y: y,
             vx: (Math.random() - 0.5) * 2,
-            vy: 0,
+            vy: (Math.random() - 0.5) * 2,
             size: ballSize
         });
         
         // Add drag handlers
-        addBallDragHandlers(ball, playgroundBalls[playgroundBalls.length - 1], container);
+        addZeroGDragHandlers(ball, zeroGBalls[zeroGBalls.length - 1], container);
     });
     
-    // Start physics
-    startPlaygroundPhysics(container);
+    // Start zero-gravity physics
+    startZeroGPhysics(container);
+    
+    // Request device motion permission (for iOS 13+)
+    requestDeviceMotion();
 }
 
-function addBallDragHandlers(ball, ballData, container) {
+function addZeroGDragHandlers(ball, ballData, container) {
     let isDragging = false;
     let lastX = 0, lastY = 0;
     let lastTime = 0;
@@ -962,6 +993,7 @@ function addBallDragHandlers(ball, ballData, container) {
     const onStart = (e) => {
         isDragging = true;
         ball.classList.add('grabbing');
+        ball.classList.remove('floating');
         
         const pos = getEventPos(e);
         lastX = pos.x;
@@ -987,8 +1019,8 @@ function addBallDragHandlers(ball, ballData, container) {
         const now = Date.now();
         const dt = (now - lastTime) / 1000;
         if (dt > 0) {
-            ballData.vx = (pos.x - lastX) / dt * 0.05;
-            ballData.vy = (pos.y - lastY) / dt * 0.05;
+            ballData.vx = (pos.x - lastX) / dt * 0.08;
+            ballData.vy = (pos.y - lastY) / dt * 0.08;
         }
         
         ballData.x = Math.max(0, Math.min(containerRect.width - ballData.size, newX));
@@ -1020,6 +1052,82 @@ function addBallDragHandlers(ball, ballData, container) {
     document.addEventListener('touchend', onEnd);
 }
 
+function requestDeviceMotion() {
+    // Check if DeviceMotionEvent is available
+    if (typeof DeviceMotionEvent !== 'undefined') {
+        // iOS 13+ requires permission
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            // Create a button for user interaction (required for iOS)
+            const hint = document.querySelector('.zero-g-hint');
+            if (hint) {
+                hint.style.cursor = 'pointer';
+                hint.addEventListener('click', async () => {
+                    try {
+                        const permission = await DeviceMotionEvent.requestPermission();
+                        if (permission === 'granted') {
+                            enableDeviceMotion();
+                            hint.innerHTML = `
+                                <span class="hint-icon">🪐</span>
+                                <span data-tr="Cihazı hareket ettir!" data-en="Move your device!">Cihazı hareket ettir!</span>
+                            `;
+                        }
+                    } catch (error) {
+                        console.log('Device motion permission denied');
+                    }
+                }, { once: true });
+            }
+        } else {
+            // Non-iOS devices
+            enableDeviceMotion();
+        }
+    }
+    
+    // Also add mouse movement as fallback for desktop
+    addMouseMotionFallback();
+}
+
+function enableDeviceMotion() {
+    deviceMotionEnabled = true;
+    
+    window.addEventListener('devicemotion', (event) => {
+        const accel = event.accelerationIncludingGravity;
+        if (accel) {
+            // Normalize and scale acceleration
+            motionAccel.x = (accel.x || 0) * 0.5;
+            motionAccel.y = (accel.y || 0) * -0.5; // Invert for natural feeling
+        }
+    });
+}
+
+function addMouseMotionFallback() {
+    const zeroGView = document.querySelector('.skills-zero-g-view');
+    if (!zeroGView) return;
+    
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    
+    zeroGView.addEventListener('mousemove', (e) => {
+        const rect = zeroGView.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Calculate acceleration based on mouse movement
+        const dx = mouseX - lastMouseX;
+        const dy = mouseY - lastMouseY;
+        
+        motionAccel.x = dx * 0.1;
+        motionAccel.y = dy * 0.1;
+        
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+    });
+    
+    zeroGView.addEventListener('mouseleave', () => {
+        motionAccel.x = 0;
+        motionAccel.y = 0;
+    });
+}
+
 function getEventPos(e) {
     if (e.touches && e.touches.length) {
         return { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -1027,23 +1135,35 @@ function getEventPos(e) {
     return { x: e.clientX, y: e.clientY };
 }
 
-function startPlaygroundPhysics(container) {
-    const gravity = 0.5;
-    const bounce = 0.7;
-    const friction = 0.99;
+function startZeroGPhysics(container) {
+    const bounce = 0.85;
+    const friction = 0.995;
+    const maxSpeed = 15;
     
     function update() {
         const containerRect = container.getBoundingClientRect();
         
-        playgroundBalls.forEach(ball => {
+        zeroGBalls.forEach(ball => {
             if (ball.el.classList.contains('grabbing')) return;
             
-            // Apply gravity
-            ball.vy += gravity;
+            // Apply motion acceleration (from device or mouse)
+            ball.vx += motionAccel.x * 0.2;
+            ball.vy += motionAccel.y * 0.2;
+            
+            // Add slight random drift for zero-G feeling
+            ball.vx += (Math.random() - 0.5) * 0.1;
+            ball.vy += (Math.random() - 0.5) * 0.1;
             
             // Apply friction
             ball.vx *= friction;
             ball.vy *= friction;
+            
+            // Limit max speed
+            const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+            if (speed > maxSpeed) {
+                ball.vx = (ball.vx / speed) * maxSpeed;
+                ball.vy = (ball.vy / speed) * maxSpeed;
+            }
             
             // Update position
             ball.x += ball.vx;
@@ -1059,20 +1179,13 @@ function startPlaygroundPhysics(container) {
                 ball.vx *= -bounce;
             }
             
-            // Bounce off floor
-            if (ball.y > containerRect.height - ball.size) {
-                ball.y = containerRect.height - ball.size;
-                ball.vy *= -bounce;
-                
-                // Stop bouncing if velocity is very low
-                if (Math.abs(ball.vy) < 1) {
-                    ball.vy = 0;
-                }
-            }
-            
-            // Bounce off ceiling
+            // Bounce off floor/ceiling
             if (ball.y < 0) {
                 ball.y = 0;
+                ball.vy *= -bounce;
+            }
+            if (ball.y > containerRect.height - ball.size) {
+                ball.y = containerRect.height - ball.size;
                 ball.vy *= -bounce;
             }
             
@@ -1081,17 +1194,57 @@ function startPlaygroundPhysics(container) {
             ball.el.style.top = ball.y + 'px';
         });
         
+        // Ball collision detection
+        for (let i = 0; i < zeroGBalls.length; i++) {
+            for (let j = i + 1; j < zeroGBalls.length; j++) {
+                const b1 = zeroGBalls[i];
+                const b2 = zeroGBalls[j];
+                
+                const dx = (b2.x + b2.size/2) - (b1.x + b1.size/2);
+                const dy = (b2.y + b2.size/2) - (b1.y + b1.size/2);
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const minDist = (b1.size + b2.size) / 2;
+                
+                if (dist < minDist && dist > 0) {
+                    // Collision response
+                    const nx = dx / dist;
+                    const ny = dy / dist;
+                    const overlap = minDist - dist;
+                    
+                    // Separate balls
+                    b1.x -= nx * overlap * 0.5;
+                    b1.y -= ny * overlap * 0.5;
+                    b2.x += nx * overlap * 0.5;
+                    b2.y += ny * overlap * 0.5;
+                    
+                    // Exchange velocities along collision normal
+                    const dvx = b1.vx - b2.vx;
+                    const dvy = b1.vy - b2.vy;
+                    const dvn = dvx * nx + dvy * ny;
+                    
+                    if (dvn > 0) {
+                        b1.vx -= dvn * nx * 0.5;
+                        b1.vy -= dvn * ny * 0.5;
+                        b2.vx += dvn * nx * 0.5;
+                        b2.vy += dvn * ny * 0.5;
+                    }
+                }
+            }
+        }
+        
         animationId = requestAnimationFrame(update);
     }
     
     update();
 }
 
-function stopPlaygroundPhysics() {
+function stopZeroGPhysics() {
     if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null;
     }
+    motionAccel.x = 0;
+    motionAccel.y = 0;
 }
 
 // ============================================
